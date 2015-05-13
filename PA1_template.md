@@ -1,18 +1,11 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
-```{r setoptions,echo=FALSE}
-  # Turn off scientific notation
-  options(scipen=999)
-```
+
 
 
 ## Loading and preprocessing the data
-```{r loaddata}
+
+```r
   if(!file.exists('activity.csv')){
       unzip('activity.zip')
   }
@@ -24,12 +17,22 @@ output:
 summary(totalSteps)
 ```
 
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##      41    8841   10760   10770   13290   21190       8
+```
+
 ## What is mean total number of steps taken per day?
 
-```{r histtotmean,fig.width=7,fig.height=6}
+
+```r
   # Historgram
   hist(totalSteps, main = "Total Number of Steps Per Day", xlab = "", ylab = "Freq. By Number of Days", col = "blue")
-  
+```
+
+![](PA1_template_files/figure-html/histtotmean-1.png) 
+
+```r
   # Calc the mean from the totalSteps, set na.rm=TRUE because I left them in 
   meanTotSteps <- round(mean(totalSteps, na.rm=TRUE), 2)
   
@@ -37,11 +40,12 @@ summary(totalSteps)
   medianTotSteps <- round(mean(totalSteps, na.rm=TRUE), 2)
 ```
 
-The mean is **`r meanTotSteps`** and the median is **`r medianTotSteps`** for the number of steps.
+The mean is **10766.19** and the median is **10766.19** for the number of steps.
 
 ## What is the average daily activity pattern?
 
-```{r dailyActivityPattern}
+
+```r
   # Calc the mean steps for each interval with aggregate, removing the NAs, and shaping the data.
   dailyActivityPattern <- aggregate(x = list(meanSteps = activity$steps), 
                                     by = list(interval = activity$interval), 
@@ -52,19 +56,22 @@ The mean is **`r meanTotSteps`** and the median is **`r medianTotSteps`** for th
        type = "l", 
        xlab = "Time Period (5 Minute Intervals)", 
        ylab = "Steps (Averaged)", main = "Daily Activity Pattern")
-  
+```
+
+![](PA1_template_files/figure-html/dailyActivityPattern-1.png) 
+
+```r
   # Which interval has the maxium average number of steps? 
   dailyMax <- dailyActivityPattern[which.max(dailyActivityPattern$meanSteps),]
 ```
-Interval **`r dailyMax$interval`** has the maximum number of steps at **`r round(dailyMax$meanSteps)`** steps.
+Interval **835** has the maximum number of steps at **206** steps.
 
 ## Imputing missing values
 
-```{r libload,echo=FALSE,results='hide',message=FALSE,warning=FALSE}
-  library(Hmisc)
-```
 
-```{r totalStepsExtrapolated}
+
+
+```r
   # Calculate and report the total number of missing values in the dataset
   totalMissing <- sum(is.na(activity$steps))
   
@@ -82,27 +89,32 @@ Interval **`r dailyMax$interval`** has the maximum number of steps at **`r round
        xlab = "", 
        ylab = "Freq. By Number of Days", 
        col = "green")
+```
 
+![](PA1_template_files/figure-html/totalStepsExtrapolated-1.png) 
+
+```r
   # Calc the mean from the totalStepsExtrapolated
   totalStepsExtrapolatedMean <- round(mean(totalStepsExtrapolated), 2)
   # Now the median
   totalStepsExtrapolatedMedian <- round(median(totalStepsExtrapolated), 2)
 ```
 
-The mean is **`r totalStepsExtrapolatedMean`** and the median is **`r totalStepsExtrapolatedMedian`** total number of steps taken per day with the extrapolated data.
+The mean is **10766.19** and the median is **10766.19** total number of steps taken per day with the extrapolated data.
 
 Do these values differ from the estimates from the first part of the assignment? 
 
-Given that the mean from the first part **`r meanTotSteps`** and the median **`r medianTotSteps`** are the same out to two digits as the extrapolated data, the values do not differ significantly. 
+Given that the mean from the first part **10766.19** and the median **10766.19** are the same out to two digits as the extrapolated data, the values do not differ significantly. 
 
 What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-Missing **`r totalMissing`** values didn't seem to impact the estimates.
+Missing **2304** values didn't seem to impact the estimates.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r activityByDayType}
+
+```r
   # Weekday or weekend function
   dayType <- function(date) {
     if (weekdays(date) %in% c('Saturday', 'Sunday')) {
@@ -131,5 +143,7 @@ Missing **`r totalMissing`** values didn't seem to impact the estimates.
          type = "l", layout = c(1, 2), col = c("blue"), 
          xlab = "Interval", ylab = "Number of Steps")
 ```
+
+![](PA1_template_files/figure-html/activityByDayType-1.png) 
 
 Given the graph output, the weekend overall shows more activity in the mid-morning until the evening than the weekday acivity.
